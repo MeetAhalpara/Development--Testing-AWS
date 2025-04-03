@@ -1,0 +1,339 @@
+---
+Metadata:
+  AWSToolsMetrics:
+    IaC_Generator: "arn:aws:cloudformation:ca-central-1:339712731680:generatedTemplate/c1b5da97-be26-4d5a-8f51-77d677f9ea04"
+Resources:
+  SchedulerScheduleDevTest:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Scheduler::Schedule"
+    DeletionPolicy: "Retain"
+    Properties:
+      GroupName: "default"
+      StartDate: "2025-05-01T11:55:00.000Z"
+      ScheduleExpression: "cron(55 7 ? 5 Monday 2025)"
+      Target:
+        Input: "{\n  \"InstanceIds\": [\n    \"i-0ca6fd22c86c5b540\",\n    \"i-0fcbd7ab46a5923ec\"\
+          \n  ]\n}"
+        Arn: "arn:aws:scheduler:::aws-sdk:ec2:startInstances"
+        RetryPolicy:
+          MaximumEventAgeInSeconds: 3600
+          MaximumRetryAttempts: 3
+        RoleArn:
+          Fn::GetAtt:
+          - "IAMRoleDevTestRole"
+          - "Arn"
+      Description: "Make Develop and Testing instances turn on, run file, turn off."
+      State: "DISABLED"
+      FlexibleTimeWindow:
+        Mode: "OFF"
+      ScheduleExpressionTimezone: "America/Toronto"
+      EndDate: "2025-05-31T12:05:00.000Z"
+      Name: "Dev-Test"
+  EC2Instance:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Instance"
+    DeletionPolicy: "Retain"
+    Properties:
+      Tenancy: "default"
+      SecurityGroups:
+      - "launch-wizard-2"
+      PrivateIpAddress: "172.31.4.228"
+      InstanceInitiatedShutdownBehavior: "stop"
+      CpuOptions:
+        ThreadsPerCore: 1
+        CoreCount: 1
+      BlockDeviceMappings:
+      - Ebs:
+          SnapshotId: "snap-0c58ff5e6de735c21"
+          VolumeType: "gp3"
+          Iops: 3000
+          VolumeSize: 8
+          Encrypted: false
+          DeleteOnTermination: true
+        DeviceName: "/dev/sda1"
+      AvailabilityZone: "ca-central-1b"
+      PrivateDnsNameOptions:
+        EnableResourceNameDnsARecord: true
+        HostnameType: "ip-name"
+        EnableResourceNameDnsAAAARecord: false
+      SubnetId:
+        Ref: "EC2Subnet"
+      SecurityGroupIds:
+      - "sg-08fa4de7e00f5f1f4"
+      EbsOptimized: false
+      DisableApiTermination: false
+      KeyName: "Develop"
+      SourceDestCheck: true
+      Volumes:
+      - VolumeId: "vol-0c926a24c4c470b61"
+        Device: "/dev/sda1"
+      PlacementGroupName: ""
+      VpcId: "vpc-0ad5de9879e5307d5"
+      State:
+        Code: "80"
+        Name: "stopped"
+      NetworkInterfaces:
+      - PrivateIpAddresses:
+        - PrivateIpAddress: "172.31.4.228"
+          Primary: true
+        SecondaryPrivateIpAddressCount: 0
+        DeviceIndex: "0"
+        GroupSet:
+        - Ref: "EC2SecurityGroup"
+        Ipv6Addresses: []
+        SubnetId:
+          Ref: "EC2Subnet"
+        AssociatePublicIpAddress: false
+        NetworkInterfaceId:
+          Ref: "EC2NetworkInterfaceO1"
+        DeleteOnTermination: true
+      ImageId: "ami-055943271915205db"
+      InstanceType: "t2.micro"
+      Monitoring: false
+      Tags:
+      - Value: "Development"
+        Key: "Name"
+      CreditSpecification:
+        CPUCredits: "standard"
+  EC2Volume:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Volume"
+    DeletionPolicy: "Retain"
+    Properties:
+      MultiAttachEnabled: false
+      SnapshotId: "snap-0c58ff5e6de735c21"
+      VolumeType: "gp3"
+      Encrypted: false
+      Size: 8
+      AutoEnableIO: true
+      AvailabilityZone: "ca-central-1b"
+      Throughput: 125
+      Iops: 3000
+      Tags: []
+  EC2NetworkInterfaceO1:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::NetworkInterface"
+    DeletionPolicy: "Retain"
+    Properties:
+      Description: ""
+      PrivateIpAddress: "172.31.4.228"
+      PrivateIpAddresses:
+      - PrivateIpAddress: "172.31.4.228"
+        Primary: true
+      SecondaryPrivateIpAddressCount: 0
+      Ipv6PrefixCount: 0
+      Ipv4Prefixes: []
+      Ipv4PrefixCount: 0
+      GroupSet:
+      - "sg-08fa4de7e00f5f1f4"
+      Ipv6Prefixes: []
+      SubnetId:
+        Ref: "EC2Subnet"
+      SourceDestCheck: true
+      InterfaceType: "interface"
+      Tags: []
+  EC2InstanceJi:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Instance"
+    DeletionPolicy: "Retain"
+    Properties:
+      Tenancy: "default"
+      SecurityGroups:
+      - "launch-wizard-3"
+      PrivateIpAddress: "172.31.4.144"
+      InstanceInitiatedShutdownBehavior: "stop"
+      CpuOptions:
+        ThreadsPerCore: 1
+        CoreCount: 1
+      BlockDeviceMappings:
+      - Ebs:
+          SnapshotId: "snap-0c58ff5e6de735c21"
+          VolumeType: "gp3"
+          Iops: 3000
+          VolumeSize: 8
+          Encrypted: false
+          DeleteOnTermination: true
+        DeviceName: "/dev/sda1"
+      AvailabilityZone: "ca-central-1b"
+      PrivateDnsNameOptions:
+        EnableResourceNameDnsARecord: true
+        HostnameType: "ip-name"
+        EnableResourceNameDnsAAAARecord: false
+      SubnetId:
+        Ref: "EC2Subnet"
+      SecurityGroupIds:
+      - "sg-0a7aea79998c3db39"
+      EbsOptimized: false
+      DisableApiTermination: false
+      KeyName: "Testing"
+      SourceDestCheck: true
+      Volumes:
+      - VolumeId: "vol-0a5dda6c8276a8ba8"
+        Device: "/dev/sda1"
+      PlacementGroupName: ""
+      VpcId: "vpc-0ad5de9879e5307d5"
+      State:
+        Code: "80"
+        Name: "stopped"
+      NetworkInterfaces:
+      - PrivateIpAddresses:
+        - PrivateIpAddress: "172.31.4.144"
+          Primary: true
+        SecondaryPrivateIpAddressCount: 0
+        DeviceIndex: "0"
+        GroupSet:
+        - Ref: "EC2SecurityGroupWb"
+        Ipv6Addresses: []
+        SubnetId:
+          Ref: "EC2Subnet"
+        AssociatePublicIpAddress: false
+        NetworkInterfaceId:
+          Ref: "EC2NetworkInterface"
+        DeleteOnTermination: true
+      ImageId: "ami-055943271915205db"
+      InstanceType: "t2.micro"
+      Monitoring: false
+      Tags:
+      - Value: "Testing"
+        Key: "Name"
+      CreditSpecification:
+        CPUCredits: "standard"
+  EC2Subnet:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Subnet"
+    DeletionPolicy: "Retain"
+    Properties:
+      VpcId:
+        Ref: "EC2VPC"
+      MapPublicIpOnLaunch: true
+      EnableDns64: false
+      AvailabilityZoneId: "cac1-az2"
+      PrivateDnsNameOptionsOnLaunch:
+        EnableResourceNameDnsARecord: false
+        HostnameType: "ip-name"
+        EnableResourceNameDnsAAAARecord: false
+      CidrBlock: "172.31.0.0/20"
+      Ipv6Native: false
+      Tags: []
+  EC2SecurityGroup:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::SecurityGroup"
+    DeletionPolicy: "Retain"
+    Properties:
+      GroupDescription: "launch-wizard-2 created 2025-03-16T20:43:39.953Z"
+      GroupName: "launch-wizard-2"
+      VpcId:
+        Ref: "EC2VPC"
+      SecurityGroupIngress:
+      - CidrIp: "0.0.0.0/0"
+        IpProtocol: "tcp"
+        FromPort: 22
+        ToPort: 22
+      SecurityGroupEgress:
+      - CidrIp: "0.0.0.0/0"
+        IpProtocol: "-1"
+        FromPort: -1
+        ToPort: -1
+  EC2VolumeAttachmentFZ:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::VolumeAttachment"
+    DeletionPolicy: "Retain"
+    Properties:
+      InstanceId: "i-0ca6fd22c86c5b540"
+      VolumeId: "vol-0c926a24c4c470b61"
+      Device: "/dev/sda1"
+  EC2VPC:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::VPC"
+    DeletionPolicy: "Retain"
+    Properties:
+      CidrBlock: "172.31.0.0/16"
+      EnableDnsSupport: true
+      InstanceTenancy: "default"
+      EnableDnsHostnames: true
+      Tags: []
+  EC2VolumeAttachment:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::VolumeAttachment"
+    DeletionPolicy: "Retain"
+    Properties:
+      InstanceId: "i-0fcbd7ab46a5923ec"
+      VolumeId: "vol-0a5dda6c8276a8ba8"
+      Device: "/dev/sda1"
+  EC2NetworkInterface:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::NetworkInterface"
+    DeletionPolicy: "Retain"
+    Properties:
+      Description: ""
+      PrivateIpAddress: "172.31.4.144"
+      PrivateIpAddresses:
+      - PrivateIpAddress: "172.31.4.144"
+        Primary: true
+      SecondaryPrivateIpAddressCount: 0
+      Ipv6PrefixCount: 0
+      Ipv4Prefixes: []
+      Ipv4PrefixCount: 0
+      GroupSet:
+      - "sg-0a7aea79998c3db39"
+      Ipv6Prefixes: []
+      SubnetId:
+        Ref: "EC2Subnet"
+      SourceDestCheck: true
+      InterfaceType: "interface"
+      Tags: []
+  EC2SecurityGroupWb:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::SecurityGroup"
+    DeletionPolicy: "Retain"
+    Properties:
+      GroupDescription: "launch-wizard-3 created 2025-03-16T20:51:18.644Z"
+      GroupName: "launch-wizard-3"
+      VpcId:
+        Ref: "EC2VPC"
+      SecurityGroupIngress:
+      - CidrIp: "0.0.0.0/0"
+        IpProtocol: "tcp"
+        FromPort: 22
+        ToPort: 22
+      SecurityGroupEgress:
+      - CidrIp: "0.0.0.0/0"
+        IpProtocol: "-1"
+        FromPort: -1
+        ToPort: -1
+  EC2VolumeNy:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::EC2::Volume"
+    DeletionPolicy: "Retain"
+    Properties:
+      MultiAttachEnabled: false
+      SnapshotId: "snap-0c58ff5e6de735c21"
+      VolumeType: "gp3"
+      Encrypted: false
+      Size: 8
+      AutoEnableIO: true
+      AvailabilityZone: "ca-central-1b"
+      Throughput: 125
+      Iops: 3000
+      Tags: []
+  IAMRoleDevTestRole:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::IAM::Role"
+    DeletionPolicy: "Retain"
+    Properties:
+      Path: "/"
+      ManagedPolicyArns:
+      - "arn:aws:iam::aws:policy/AmazonEventBridgeSchedulerFullAccess"
+      - "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+      MaxSessionDuration: 3600
+      RoleName: "Dev-Test_Role"
+      Description: "Allows EC2 instances to call AWS services on your behalf."
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Action: "sts:AssumeRole"
+          Effect: "Allow"
+          Principal:
+            Service:
+            - "ec2.amazonaws.com"
+            - "scheduler.amazonaws.com"
