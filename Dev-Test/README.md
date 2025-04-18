@@ -28,7 +28,7 @@ This project provides an automated solution to **start EC2 instances for Develop
 
 ## Architecture Diagram
 
-![Architecture Diagram](AWS.png)
+![Architecture Diagram](AWS.jpg)
 
 **Flow:**
 
